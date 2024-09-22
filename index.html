@@ -74,15 +74,17 @@
     </audio>
 
     <script>
-        const numBalloons = 30;
+        const numBalloons = 100;  // Increased to fill the whole page
         const container = document.getElementById('balloonContainer');
         const popSound = document.getElementById('popSound');
 
         function createBalloon() {
             const balloon = document.createElement('div');
             balloon.classList.add('balloon');
-            balloon.style.left = `${Math.random() * 90}vw`;
-            balloon.style.top = `${Math.random() * 80}vh`;
+            balloon.style.left = `${Math.random() * 100}vw`;  // Cover entire width
+            balloon.style.top = `${Math.random() * 100}vh`;   // Cover entire height
+            balloon.style.width = `${60 + Math.random() * 60}px`;  // Random size
+            balloon.style.height = `${90 + Math.random() * 60}px`; // Random size
             balloon.style.backgroundColor = getRandomColor();
 
             const thread = document.createElement('div');
