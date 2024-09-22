@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Balloon Popping Fun</title>
+    <title>Happy Birthday</title>
     <style>
         body {
             margin: 0;
@@ -15,30 +15,51 @@
             height: 100vh;
         }
 
-        #balloonContainer {
+        #balloons {
             position: relative;
             width: 100vw;
             height: 100vh;
+            overflow: hidden;
         }
 
         .balloon {
             position: absolute;
-            width: 80px;
-            height: 120px;
-            background: radial-gradient(circle at center, rgba(255, 0, 0, 0.8), rgba(255, 0, 0, 0.5)); /* Shiny balloon effect */
-            border-radius: 50% 50% 40% 40%; /* Balloon shape */
-            animation: float 5s ease-in-out infinite;
-            cursor: pointer;
+            width: 250px;
+            height: 280px;
+            background-image: url('—Pngtree—red love balloon_4447810.png'); /* Using the uploaded balloon image */
+            background-size: cover;
+            cursor: url('https://cdn-icons-png.flaticon.com/512/7180/7180509.png'), auto; /* Sharp pin-like cursor */
+            transition: transform 0.3s ease;
         }
 
-        .thread {
-            width: 2px;
-            height: 60px;
-            background-color: #444;
-            position: absolute;
-            bottom: -60px;
-            left: 50%;
-            transform: translateX(-50%);
+        .balloon:hover {
+            transform: scale(1.1);
+        }
+
+        .hidden-message {
+            display: none;
+            text-align: center;
+            font-size: 2rem;
+            color: #333;
+            margin-top: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        #image {
+            display: none;
+            margin-top: 20px;
+            border-radius: 10px;
+        }
+
+        h1 {
+            display: none;
+            font-size: 3rem;
+            color: #e74c3c;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 8px;
         }
 
         @keyframes float {
@@ -53,88 +74,113 @@
             }
         }
 
-        @keyframes pop {
+        @keyframes popEffect {
             0% {
                 transform: scale(1);
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.5;
             }
             100% {
                 transform: scale(0);
                 opacity: 0;
             }
         }
+
+        .pop {
+            animation: popEffect 0.3s forwards;
+        }
     </style>
 </head>
 <body>
-    <div id="balloonContainer"></div>
+    <div id="balloons"></div>
+    <h1 id="message">Happy Birthday, My Love!</h1>
+    <div class="hidden-message">Wishing you a day filled with love and happiness. You are the light of my life, and I cherish every moment with you.</div>
+    <img id="image" src="bucki.jfif" alt="Wife's Picture" width="300px">
 
     <!-- Sound for balloon pop -->
     <audio id="popSound">
         <source src="balloon-pop-48030.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
     </audio>
 
     <script>
         const numBalloons = 100;
-        const container = document.getElementById('balloonContainer');
-        const popSound = document.getElementById('popSound');
+        const balloonContainer = document.getElementById('balloons');
         const balloons = [];
+        const popSound = document.getElementById('popSound');
+        let popped = false; // To check if a balloon has been popped
 
-        function createBalloon() {
+        // Balloon creation
+        for (let i = 0; i < numBalloons; i++) {
+            const balloonWrapper = document.createElement('div');
+            balloonWrapper.style.position = 'absolute';
+            balloonWrapper.style.top = `${Math.random() * 80}vh`;
+            balloonWrapper.style.left = `${Math.random() * 80}vw`;
+
             const balloon = document.createElement('div');
             balloon.classList.add('balloon');
-            balloon.style.left = `${Math.random() * 100}vw`;
-            balloon.style.top = `${Math.random() * 100}vh`;
-            balloon.style.width = `${60 + Math.random() * 60}px`;
-            balloon.style.height = `${90 + Math.random() * 60}px`;
-            balloon.style.backgroundColor = getRandomColor();
-
-            const thread = document.createElement('div');
-            thread.classList.add('thread');
-            balloon.appendChild(thread);
-
+            balloon.style.color = getRandomColor();
             balloon.addEventListener('click', popBalloon);
 
-            container.appendChild(balloon);
-            balloons.push(balloon); // Store balloons in an array for sequential popping
+            balloonWrapper.appendChild(balloon);
+            balloonContainer.appendChild(balloonWrapper);
+
+            // Store balloon in array for sequential popping
+            balloons.push(balloonWrapper);
         }
 
+        // Random color generator
         function getRandomColor() {
             const colors = ['#ff7675', '#74b9ff', '#fd79a8', '#fdcb6e', '#55efc4', '#fab1a0', '#ffeaa7'];
             return colors[Math.floor(Math.random() * colors.length)];
         }
 
+        // Balloon pop effect with sound
         function popBalloon(e) {
-            const balloon = e.target;
-            popSound.currentTime = 0;
-            popSound.play();
-            balloon.style.animation = 'pop 0.3s forwards';
-            setTimeout(() => balloon.remove(), 300);
+            if (!popped) {
+                popped = true; // Ensure only one balloon triggers the chain
+                const balloon = e.target;
+                balloon.classList.add('pop'); // Add pop animation
+                popSound.play(); // Play pop sound
 
-            // Start sequential popping of remaining balloons
-            setTimeout(popRemainingBalloons, 300);
+                // Sequentially pop remaining balloons
+                setTimeout(() => popRemainingBalloons(), 300);
+
+                // Check if all balloons are popped
+                setTimeout(() => {
+                    balloon.parentElement.style.display = 'none';
+                    checkAllBalloonsPopped();
+                }, 300);
+            }
         }
 
-        // Sequentially pop all balloons
+        // Sequentially pop all remaining balloons
         function popRemainingBalloons() {
             let delay = 0;
 
             balloons.forEach((balloon, index) => {
-                if (balloon.parentElement) { // If balloon is still in DOM
+                if (balloon && balloon.style.display !== 'none') {
                     setTimeout(() => {
-                        balloon.style.animation = 'pop 0.3s forwards';
+                        balloon.firstChild.classList.add('pop'); // Add pop animation
                         popSound.currentTime = 0;
-                        popSound.play();
-                        setTimeout(() => balloon.remove(), 300);
+                        popSound.play(); // Play pop sound
+                        setTimeout(() => balloon.style.display = 'none', 300);
                     }, delay);
 
-                    delay += 300; // Increase delay for next balloon
+                    delay += 300; // Increase delay for the next balloon
                 }
             });
         }
 
-        // Create balloons on page load
-        for (let i = 0; i < numBalloons; i++) {
-            createBalloon();
+        // Check if all balloons are popped
+        function checkAllBalloonsPopped() {
+            const remainingBalloons = document.querySelectorAll('#balloons > div:not([style*="display: none"])');
+            if (remainingBalloons.length === 0) {
+                document.getElementById('message').style.display = 'block';
+                document.querySelector('.hidden-message').style.display = 'block';
+                document.getElementById('image').style.display = 'block';
+            }
         }
     </script>
 </body>
