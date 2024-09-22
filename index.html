@@ -74,17 +74,18 @@
     </audio>
 
     <script>
-        const numBalloons = 100;  // Increased to fill the whole page
+        const numBalloons = 100;
         const container = document.getElementById('balloonContainer');
         const popSound = document.getElementById('popSound');
+        const balloons = [];
 
         function createBalloon() {
             const balloon = document.createElement('div');
             balloon.classList.add('balloon');
-            balloon.style.left = `${Math.random() * 100}vw`;  // Cover entire width
-            balloon.style.top = `${Math.random() * 100}vh`;   // Cover entire height
-            balloon.style.width = `${60 + Math.random() * 60}px`;  // Random size
-            balloon.style.height = `${90 + Math.random() * 60}px`; // Random size
+            balloon.style.left = `${Math.random() * 100}vw`;
+            balloon.style.top = `${Math.random() * 100}vh`;
+            balloon.style.width = `${60 + Math.random() * 60}px`;
+            balloon.style.height = `${90 + Math.random() * 60}px`;
             balloon.style.backgroundColor = getRandomColor();
 
             const thread = document.createElement('div');
@@ -94,6 +95,7 @@
             balloon.addEventListener('click', popBalloon);
 
             container.appendChild(balloon);
+            balloons.push(balloon); // Store balloons in an array for sequential popping
         }
 
         function getRandomColor() {
@@ -103,12 +105,34 @@
 
         function popBalloon(e) {
             const balloon = e.target;
-            balloon.style.animation = 'pop 0.3s forwards';
             popSound.currentTime = 0;
             popSound.play();
+            balloon.style.animation = 'pop 0.3s forwards';
             setTimeout(() => balloon.remove(), 300);
+
+            // Start sequential popping of remaining balloons
+            setTimeout(popRemainingBalloons, 300);
         }
 
+        // Sequentially pop all balloons
+        function popRemainingBalloons() {
+            let delay = 0;
+
+            balloons.forEach((balloon, index) => {
+                if (balloon.parentElement) { // If balloon is still in DOM
+                    setTimeout(() => {
+                        balloon.style.animation = 'pop 0.3s forwards';
+                        popSound.currentTime = 0;
+                        popSound.play();
+                        setTimeout(() => balloon.remove(), 300);
+                    }, delay);
+
+                    delay += 300; // Increase delay for next balloon
+                }
+            });
+        }
+
+        // Create balloons on page load
         for (let i = 0; i < numBalloons; i++) {
             createBalloon();
         }
