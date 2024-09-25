@@ -3,197 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Birthday</title>
+    <title>Happy Birthday!</title>
     <style>
+        img {
+            width: 300px; /* Set the desired width */
+            height: 300px; /* Automatically adjust the height to maintain the image's aspect ratio */
+        }
         body {
+            font-family: Arial, sans-serif;
             margin: 0;
-            overflow: hidden;
-            background: #87CEEB; /* Soft sky blue background */
+            padding: 0;
+            background-image: url('Balloons.jpg'); /* Replace with your balloon image */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
         }
 
-        #balloons {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .balloon {
-            position: absolute;
-            width: 250px;
-            height: 280px;
-            background-image: url('—Pngtree—red love balloon_4447810.png');
-            background-size: cover;
-            cursor: url('https://cdn-icons-png.flaticon.com/512/7180/7180509.png'), auto;
-            transition: transform 0.3s ease;
-        }
-
-        .balloon:hover {
-            transform: scale(1.1);
-        }
-
-        .hidden-message {
-            display: none;
-            font-size: 1.5rem;
-            color: #333;
+        .card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
             text-align: center;
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 20px;
-            width: 70%;
+            max-width: 80%;
         }
 
-        #image {
-            display: none;
-            margin-top: 20px;
+        .card h1 {
+            font-size: 2em;
+        }
+
+        .card p {
+            font-size: 1.2em;
+        }
+
+        .card img {
+            max-width: 100%;
+            height: auto;
+            border: 5px solid #f0f0f0;
             border-radius: 10px;
         }
 
-        h1 {
-            display: none;
-            font-size: 3rem;
-            color: #e74c3c;
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 10px;
-            border-radius: 8px;
-        }
-
-        @keyframes popEffect {
-            0% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.5);
-                opacity: 0.5;
-            }
-            100% {
-                transform: scale(0);
-                opacity: 0;
-            }
-        }
-
-        .pop {
-            animation: popEffect 0.3s forwards;
+        .upload-button {
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <div id="balloons"></div>
-    <h1 id="message">Happy Birthday, My Love!</h1>
-    <div class="hidden-message">Wishing you a day filled with love and happiness. You are the light of my life, and I cherish every moment with you.</div>
-    <img id="image" src="bucki.jfif" alt="Wife's Picture" width="300px">
-
-    <!-- Sound for balloon pop -->
-    <audio id="popSound">
-        <source src="balloon-pop-48030.mp3" type="audio/mpeg">
-    </audio>
-
-    <script>
-        const numBalloons = 200;
-        const balloonContainer = document.getElementById('balloons');
-        const balloons = [];
-        const popSound = document.getElementById('popSound');
-        let numBalloonsPopped = 0;
-
-        // Balloon creation
-        for (let i = 0; i < numBalloons; i++) {
-            const balloonWrapper = document.createElement('div');
-            balloonWrapper.style.position = 'absolute';
-            balloonWrapper.style.top = `${Math.random() * 80}vh`;
-            balloonWrapper.style.left = `${Math.random() * 80}vw`;
-
-            const balloon = document.createElement('div');
-            balloon.classList.add('balloon');
-            balloon.style.color = getRandomColor();
-            balloon.addEventListener('click', popBalloon);
-
-            balloonWrapper.appendChild(balloon);
-            balloonContainer.appendChild(balloonWrapper);
-
-            // Store balloon with random speed and direction for bouncing effect
-            balloons.push({
-                element: balloonWrapper,
-                speedX: (Math.random() * 2 + 1) * (Math.random() > 0.5 ? 1 : -1),
-                speedY: (Math.random() * 2 + 1) * (Math.random() > 0.5 ? 1 : -1)
-            });
-        }
-
-        // Random color generator
-        function getRandomColor() {
-            const colors = ['#ff7675', '#74b9ff', '#fd79a8', '#fdcb6e', '#55efc4', '#fab1a0', '#ffeaa7'];
-            return colors[Math.floor(Math.random() * colors.length)];
-        }
-
-        // Balloon pop effect with sound
-        function popBalloon(e) {
-            const balloon = e.target;
-            balloon.classList.add('pop'); // Add pop animation
-            popSound.play(); // Play pop sound
-
-            // Remove the balloon after the pop animation
-            setTimeout(() => {
-                balloon.parentElement.style.display = 'none';
-                numBalloonsPopped++;
-                checkAllBalloonsPopped();
-            }, 300);
-        }
-
-        // Sequentially pop all remaining balloons
-        function popRemainingBalloons() {
-            let delay = 0;
-
-            balloons.forEach((balloon, index) => {
-                if (balloon && balloon.element.style.display !== 'none') {
-                    setTimeout(() => {
-                        balloon.element.firstChild.classList.add('pop');
-                        popSound.currentTime = 0;
-                        popSound.play();
-                        setTimeout(() => balloon.element.style.display = 'none', 300);
-                    }, delay);
-
-                    delay += 10;
-                }
-            });
-        }
-
-        // Balloon bouncing effect
-        function animateBalloons() {
-            balloons.forEach(balloon => {
-                const rect = balloon.element.getBoundingClientRect();
-                let newX = rect.left + balloon.speedX;
-                let newY = rect.top + balloon.speedY;
-
-                // Bounce off the edges of the screen
-                if (newX <= 0 || newX + rect.width >= window.innerWidth) {
-                    balloon.speedX *= -1;
-                }
-                if (newY <= 0 || newY + rect.height >= window.innerHeight) {
-                    balloon.speedY *= -1;
-                }
-
-                balloon.element.style.left = `${newX}px`;
-                balloon.element.style.top = `${newY}px`;
-            });
-
-            requestAnimationFrame(animateBalloons);
-        }
-
-        // Start the balloon animation
-        animateBalloons();
-
-        // Check if all balloons are popped
-        function checkAllBalloonsPopped() {
-            if (numBalloonsPopped === numBalloons) {
-                document.getElementById('message').style.display = 'block';
-                document.querySelector('.hidden-message').style.display = 'block';
-                document.getElementById('image').style.display = 'block';
-            }
-        }
-    </script>
+    <div class="card">
+        <h1>Happy Birthday 🎂 🎉 Sai Kumar 🎈!</h1>
+        <p>Another year older, but are you any wiser? 😜</p>
+        <p>I wanted to take a moment to wish you a birthday that's as epic as your world tour and as adventurous as your quest for the perfect woman! 🌎💘</p>
+        <p>As you embark on another journey around the sun, may your travels be filled with more incredible stories than Tinder could ever provide! Who knows, maybe this year you'll finally find "the one" on a remote island somewhere - just remember to bring me along as your wingman! 😉</p>
+      <!-- <p>Here is a special gift for you <a href="https://www.amazon.in/g/8INTC14OI7S0U6V4?_encoding=UTF8&asin=B079YZG98M">ClickHere</a></p>-->
+       <p> Enjoy your special day, and let's make sure to celebrate together soon😁😁</p>
+        <div>
+            <!-- Placeholder for an uploaded image -->
+            <img src="./4b0a2bab-ceae-4123-8bc9-3217a0115d18.jpg" alt="Sai Kumar">
+        </div>
+        <div>
+            <!-- Add an image upload form here using JavaScript to handle the file upload -->
+        </div>
+    </div>
 </body>
 </html>
